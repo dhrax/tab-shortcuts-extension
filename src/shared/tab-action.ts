@@ -6,6 +6,8 @@ export const TAB_ACTIONS = [
   "close-tabs-to-left",
   "close-tabs-to-right",
   "close-other-tabs",
+  "group-tabs-by-domain",
+  "sort-tabs-by-domain",
   "toggle-pin-current-tab"
 ] as const;
 

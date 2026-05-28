@@ -129,6 +129,86 @@ async function closeOtherTabs(): Promise<void> {
   await closeTabsById(tabIdsToClose);
 }
 
+function getTabHostname(url: string | undefined): string | null {
+  if (url === undefined || isInternalUrl(url)) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname;
+  } catch {
+    return null;
+  }
+}
+
+async function groupTabsByDomain(): Promise<void> {
+  const tabs = await getCurrentWindowTabs();
+  const groups = new Map<string, number[]>();
+
+  for (const tab of tabs) {
+    if (tab.id === undefined || tab.pinned || tab.url === undefined) {
+      continue;
+    }
+
+    const hostname = getTabHostname(tab.url);
+
+    if (hostname === null) {
+      continue;
+    }
+
+    const entries = groups.get(hostname) ?? [];
+    entries.push(tab.id);
+    groups.set(hostname, entries);
+  }
+
+  for (const tabIds of groups.values()) {
+    if (tabIds.length < 2) {
+      continue;
+    }
+
+    await chrome.tabs.group({ tabIds });
+  }
+}
+
+async function sortTabsByDomain(): Promise<void> {
+  const tabs = await getCurrentWindowTabs();
+  const pinnedTabs = tabs.filter((tab) => tab.pinned && tab.id !== undefined);
+  const nonPinnedTabs = tabs.filter((tab) => !tab.pinned && tab.id !== undefined);
+
+  const sortedNonPinned = [...nonPinnedTabs].sort((a, b) => {
+    const hostnameA = getTabHostname(a.url);
+    const hostnameB = getTabHostname(b.url);
+    const internalA = hostnameA === null;
+    const internalB = hostnameB === null;
+
+    if (internalA !== internalB) {
+      return internalA ? 1 : -1;
+    }
+
+    if (hostnameA !== hostnameB) {
+      return hostnameA && hostnameB
+        ? hostnameA.localeCompare(hostnameB, undefined, {
+            sensitivity: "base"
+          })
+        : 0;
+    }
+
+    return (a.title ?? "").localeCompare(b.title ?? "", undefined, {
+      sensitivity: "base"
+    });
+  });
+
+  const tabIds = sortedNonPinned.map((tab) => tab.id as number);
+
+  if (tabIds.length === 0) {
+    return;
+  }
+
+  const pinnedCount = pinnedTabs.length;
+  await chrome.tabs.move(tabIds, { index: pinnedCount });
+}
+
 async function closeTabsById(tabIds: number[]): Promise<void> {
   if (tabIds.length === 0) {
     return;
@@ -180,6 +260,14 @@ export async function handleTabAction(action: TabAction): Promise<string> {
     case "close-other-tabs":
       await closeOtherTabs();
       return "Other tabs closed";
+
+    case "group-tabs-by-domain":
+      await groupTabsByDomain();
+      return "Tabs grouped by domain";
+
+    case "sort-tabs-by-domain":
+      await sortTabsByDomain();
+      return "Tabs sorted by domain";
 
     case "toggle-pin-current-tab":
       await togglePinCurrentTab();

@@ -3,7 +3,7 @@
   "name": "Tab Shortcuts",
   "version": "0.1.0",
   "description": "Shortcuts to duplicate, mute and manage tabs in Brave.",
-  "permissions": ["tabs", "storage", "clipboardWrite"],
+  "permissions": ["tabs", "tabGroups", "storage", "clipboardWrite"],
   "action": {
     "default_title": "Tab Shortcuts",
     "default_popup": "popup.html"
@@ -47,6 +47,12 @@
     },
     "close-tabs-to-right": {
       "description": "Close tabs to the right"
+    },
+    "group-tabs-by-domain": {
+      "description": "Group tabs in current window by domain"
+    },
+    "sort-tabs-by-domain": {
+      "description": "Sort non-pinned tabs by domain"
     },
     "toggle-pin-current-tab": {
       "description": "Pin or unpin current tab"
