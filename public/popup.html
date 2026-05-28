@@ -66,6 +66,8 @@
           <option value="rules-section">Rules</option>
           <option value="links-section">Links</option>
           <option value="snippets-section">Snippets</option>
+          <option value="cleanup-section">Cleanup</option>
+          <option value="notes-section">Notes</option>
         </select>
       </div>
 
@@ -192,6 +194,45 @@
           <button id="add-snippet-button" type="button" class="small-button">Add snippet</button>
         </div>
         <div id="snippets-list" class="snippets-list"></div>
+      </section>
+
+      <section id="cleanup-section" class="card section-panel hidden">
+        <div class="section-title">Cleanup</div>
+        <div class="form-row cleanup-controls">
+          <label class="field-label" for="inactive-threshold-input">Inactive threshold (hours)</label>
+          <input id="inactive-threshold-input" type="number" min="1" step="1" />
+          <label class="checkbox-row" for="include-pinned-cleanup-input">
+            <input id="include-pinned-cleanup-input" type="checkbox" />
+            <span>Include pinned tabs</span>
+          </label>
+          <button id="refresh-cleanup-button" type="button" class="small-button">Refresh</button>
+          <button id="close-inactive-button" type="button" class="small-button danger">Close inactive tabs</button>
+        </div>
+        <div id="cleanup-summary" class="cleanup-summary"></div>
+        <div id="cleanup-save-offer" class="cleanup-offer hidden">
+          <input id="cleanup-session-name-input" type="text" placeholder="Session name" />
+          <div class="confirmation-controls">
+            <button id="save-close-inactive-button" type="button" class="small-button danger">Save and close</button>
+            <button id="close-without-saving-button" type="button" class="small-button danger">Close only</button>
+          </div>
+          <button id="cancel-cleanup-button" type="button" class="small-button">Cancel</button>
+        </div>
+        <div id="cleanup-list" class="cleanup-list"></div>
+      </section>
+
+      <section id="notes-section" class="card section-panel hidden">
+        <div class="section-title">Notes</div>
+        <div id="notes-context" class="note-context"></div>
+        <div class="form-row">
+          <select id="note-scope-select">
+            <option value="url">Exact URL</option>
+            <option value="domain">Domain</option>
+          </select>
+          <textarea id="note-content-input" placeholder="Note for current tab"></textarea>
+          <button id="save-note-button" type="button" class="small-button">Save note</button>
+          <button id="cancel-note-edit-button" type="button" class="small-button hidden">Cancel edit</button>
+        </div>
+        <div id="tab-notes-list" class="notes-list"></div>
       </section>
     </div>
 

@@ -8,6 +8,8 @@ import { initializeLinkCopy } from "./popup/link-copy.js";
 import { initializeSnippets } from "./popup/snippets.js";
 import { initializeHistory } from "./popup/history.js";
 import { initializeCommandPalette } from "./popup/command-palette.js";
+import { initializeCleanup } from "./popup/cleanup.js";
+import { initializeNotes } from "./popup/notes.js";
 import { setStatus } from "./popup/dom.js";
 
 function initializeOptionsButton(): void {
@@ -39,7 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeDomainRules(),
     initializeLinkCopy(),
     initializeSnippets(),
-    initializeHistory()
+    initializeHistory(),
+    initializeCleanup(),
+    initializeNotes()
   ]).catch((error: unknown) => {
     const message =
       error instanceof Error

@@ -1,5 +1,6 @@
 import { handleTabAction } from "./background/tab-actions.js";
 import { initializeDomainRuleListeners } from "./background/domain-rules.js";
+import { initializeTabActivityTracking } from "./background/tab-activity.js";
 import { performUndo, getUndoHistory, clearUndoHistory } from "./background/undo.js";
 import type { ExtensionMessage, ExtensionResponse } from "./shared/tab-action.js";
 import { isTabAction } from "./shared/tab-action.js";
@@ -37,6 +38,7 @@ chrome.commands.onCommand.addListener((command: string) => {
 });
 
 initializeDomainRuleListeners();
+initializeTabActivityTracking();
 
 chrome.runtime.onMessage.addListener(
   (

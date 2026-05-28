@@ -33,6 +33,26 @@ export interface UndoEntry {
   tabs: ClosedTab[];
 }
 
+export interface TabActivityMap {
+  [tabId: string]: number;
+}
+
+export interface CleanupSettings {
+  inactiveThresholdHours: number;
+  includePinnedTabs: boolean;
+}
+
+export type TabNoteTargetType = "url" | "domain";
+
+export interface TabNote {
+  id: string;
+  targetType: TabNoteTargetType;
+  target: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DomainRule {
   id: string;
   hostname: string;
@@ -64,13 +84,21 @@ export const DEFAULT_SETTINGS: Settings = {
   defaultSessionNamePrefix: "Session"
 };
 
+export const DEFAULT_CLEANUP_SETTINGS: CleanupSettings = {
+  inactiveThresholdHours: 24,
+  includePinnedTabs: false
+};
+
 const STORAGE_KEYS = {
   savedSessions: "savedSessions",
   savedSnippets: "savedSnippets",
   savedWorkspaces: "savedWorkspaces",
   settings: "settings",
   domainRules: "domainRules",
-  undoHistory: "undoHistory"
+  undoHistory: "undoHistory",
+  tabActivity: "tabActivity",
+  cleanupSettings: "cleanupSettings",
+  tabNotes: "tabNotes"
 } as const;
 
 function getStorage<T>(keys: string | string[] | object): Promise<T> {
@@ -159,6 +187,49 @@ export async function loadUndoHistory(): Promise<UndoEntry[]> {
 
 export async function saveUndoHistory(history: UndoEntry[]): Promise<void> {
   await setStorage({ [STORAGE_KEYS.undoHistory]: history });
+}
+
+export async function loadTabActivity(): Promise<TabActivityMap> {
+  const result = await getStorage<{ tabActivity?: TabActivityMap }>(
+    { tabActivity: {} }
+  );
+
+  if (typeof result.tabActivity !== "object" || result.tabActivity === null) {
+    return {};
+  }
+
+  return result.tabActivity;
+}
+
+export async function saveTabActivity(activity: TabActivityMap): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.tabActivity]: activity });
+}
+
+export async function loadCleanupSettings(): Promise<CleanupSettings> {
+  const result = await getStorage<{ cleanupSettings?: Partial<CleanupSettings> }>(
+    { cleanupSettings: {} }
+  );
+
+  return {
+    ...DEFAULT_CLEANUP_SETTINGS,
+    ...(result.cleanupSettings ?? {})
+  };
+}
+
+export async function saveCleanupSettings(
+  settings: CleanupSettings
+): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.cleanupSettings]: settings });
+}
+
+export async function loadTabNotes(): Promise<TabNote[]> {
+  const result = await getStorage<{ tabNotes?: TabNote[] }>({ tabNotes: [] });
+
+  return Array.isArray(result.tabNotes) ? result.tabNotes : [];
+}
+
+export async function saveTabNotes(notes: TabNote[]): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.tabNotes]: notes });
 }
 
 export async function loadSettings(): Promise<Settings> {

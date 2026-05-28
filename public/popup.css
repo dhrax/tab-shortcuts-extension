@@ -280,6 +280,7 @@ body {
 }
 
 .form-row input,
+.form-row select,
 .form-row textarea,
 .form-row button,
 .copy-grid {
@@ -287,7 +288,8 @@ body {
 }
 
 input,
-textarea {
+textarea,
+select {
   border: 1px solid #374151;
   border-radius: 10px;
   background: #111827;
@@ -377,7 +379,9 @@ textarea {
 .search-results,
 .sessions-list,
 .snippets-list,
-.rules-list {
+.rules-list,
+.cleanup-list,
+.notes-list {
   display: grid;
   gap: 8px;
   max-height: 260px;
@@ -388,7 +392,9 @@ textarea {
 .search-item,
 .session-item,
 .snippet-item,
-.rule-item {
+.rule-item,
+.cleanup-item,
+.note-item {
   padding: 10px;
   border: 1px solid #374151;
   border-radius: 12px;
@@ -398,7 +404,9 @@ textarea {
 .search-item-info,
 .session-item-header,
 .snippet-item-header,
-.rule-item-header {
+.rule-item-header,
+.cleanup-item-header,
+.note-item-header {
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -409,7 +417,9 @@ textarea {
 .search-item-title,
 .session-item-title,
 .snippet-item-title,
-.rule-item-title {
+.rule-item-title,
+.cleanup-item-title,
+.note-item-title {
   font-weight: 700;
   font-size: 13px;
 }
@@ -417,17 +427,70 @@ textarea {
 .search-item-url,
 .session-item-meta,
 .snippet-item-meta,
-.rule-item-meta {
+.rule-item-meta,
+.cleanup-item-meta,
+.cleanup-item-url,
+.note-item-meta,
+.note-context {
   color: #9ca3af;
   font-size: 11px;
   min-width: 0;
 }
 
-.snippet-item-content {
+.snippet-item-content,
+.note-item-content {
   white-space: pre-wrap;
   color: #d1d5db;
   font-size: 12px;
   margin-bottom: 8px;
+}
+
+.cleanup-controls {
+  margin-bottom: 8px;
+}
+
+.field-label,
+.checkbox-row,
+.cleanup-summary {
+  color: #d1d5db;
+  font-size: 11px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.cleanup-offer {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 10px;
+  border: 1px solid #7f1d1d;
+  border-radius: 12px;
+  background: #111827;
+}
+
+.cleanup-offer.hidden {
+  display: none;
+}
+
+.note-context {
+  overflow: hidden;
+  margin-bottom: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-item-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .empty-message {
