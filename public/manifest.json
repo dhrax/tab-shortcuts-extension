@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Shortcuts",
+  "version": "0.1.0",
+  "description": "Atajos para duplicar, mutear y gestionar pestañas en Brave.",
+  "permissions": ["tabs"],
+  "action": {
+    "default_title": "Tab Shortcuts",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+A"
+      }
+    },
+    "duplicate-current-tab": {
+      "suggested_key": {
+        "default": "Alt+Shift+D"
+      },
+      "description": "Duplicar pestaña actual"
+    },
+    "toggle-mute-current-tab": {
+      "suggested_key": {
+        "default": "Alt+Shift+M"
+      },
+      "description": "Mutear o desmutear pestaña actual"
+    },
+    "close-other-tabs": {
+      "suggested_key": {
+        "default": "Alt+Shift+X"
+      },
+      "description": "Cerrar todas las pestañas excepto la actual"
+    },
+    "mute-other-tabs": {
+      "description": "Mutear todas las pestañas excepto la actual"
+    },
+    "close-duplicate-tabs": {
+      "description": "Cerrar pestañas duplicadas por URL"
+    },
+    "close-tabs-to-left": {
+      "description": "Cerrar pestañas a la izquierda"
+    },
+    "close-tabs-to-right": {
+      "description": "Cerrar pestañas a la derecha"
+    },
+    "toggle-pin-current-tab": {
+      "description": "Fijar o desfijar pestaña actual"
+    }
+  }
+}   

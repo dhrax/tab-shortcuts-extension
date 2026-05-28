@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tab Shortcuts</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 380px;
+        margin: 0;
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        background: #111827;
+        color: #f9fafb;
+      }
+
+      .panel {
+        padding: 12px;
+      }
+
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin-top: 3px;
+        color: #9ca3af;
+        font-size: 11px;
+      }
+
+      .open-shortcut {
+        padding: 4px 7px;
+        border-radius: 7px;
+        background: #374151;
+        color: #d1d5db;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      .card {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        background: #1f2937;
+      }
+
+      .section-title {
+        margin-bottom: 8px;
+        color: #d1d5db;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .tab-title {
+        overflow: hidden;
+        margin-bottom: 4px;
+        font-size: 13px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .tab-url {
+        overflow: hidden;
+        color: #9ca3af;
+        font-size: 11px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .top-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .badges {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .badge {
+        padding: 3px 6px;
+        border-radius: 999px;
+        background: #374151;
+        color: #d1d5db;
+        font-size: 10px;
+      }
+
+      .stats-inline {
+        display: grid;
+        grid-template-columns: repeat(3, 52px);
+        gap: 6px;
+      }
+
+      .stat {
+        padding: 7px;
+        border-radius: 9px;
+        background: #111827;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .stat-label {
+        margin-top: 1px;
+        color: #9ca3af;
+        font-size: 9px;
+      }
+
+      .action-group {
+        margin-bottom: 10px;
+      }
+
+      .action-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .action-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      .action-button {
+        min-height: 54px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 9px;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        background: #111827;
+        color: #f9fafb;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .action-button:hover {
+        background: #1f2937;
+      }
+
+      .action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .action-title {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.15;
+      }
+
+      .shortcut {
+        width: fit-content;
+        padding: 3px 5px;
+        border-radius: 6px;
+        background: #374151;
+        color: #d1d5db;
+        font-size: 9px;
+      }
+
+      .status {
+        min-height: 16px;
+        color: #9ca3af;
+        font-size: 11px;
+      }
+
+      .status.success {
+        color: #86efac;
+      }
+
+      .status.error {
+        color: #fca5a5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="panel">
+      <header class="header">
+        <div>
+          <h1 class="title">Tab Shortcuts</h1>
+          <div class="subtitle">Panel de control de pestañas</div>
+        </div>
+
+        <div class="open-shortcut">Alt Shift A</div>
+      </header>
+
+      <section class="card">
+        <div class="top-row">
+          <div>
+            <div class="section-title">Pestaña actual</div>
+            <div id="current-tab-title" class="tab-title">Cargando pestaña...</div>
+            <div id="current-tab-url" class="tab-url"></div>
+
+            <div class="badges">
+              <span id="current-tab-status" class="badge">Estado</span>
+              <span id="current-tab-muted" class="badge">Audio</span>
+            </div>
+          </div>
+
+          <div class="stats-inline">
+            <div class="stat">
+              <div id="total-tabs" class="stat-value">0</div>
+              <div class="stat-label">Tabs</div>
+            </div>
+
+            <div class="stat">
+              <div id="muted-tabs" class="stat-value">0</div>
+              <div class="stat-label">Mute</div>
+            </div>
+
+            <div class="stat">
+              <div id="audible-tabs" class="stat-value">0</div>
+              <div class="stat-label">Audio</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="action-group">
+          <div class="section-title">Acciones rápidas</div>
+
+          <div class="action-grid">
+            <button class="action-button" data-action="duplicate-current-tab">
+              <span class="action-title">Duplicar pestaña</span>
+              <span class="shortcut">Alt Shift D</span>
+            </button>
+
+            <button class="action-button" data-action="toggle-mute-current-tab">
+              <span class="action-title">Mutear / desmutear</span>
+              <span class="shortcut">Alt Shift M</span>
+            </button>
+
+            <button class="action-button" data-action="toggle-pin-current-tab">
+              <span class="action-title">Fijar / desfijar</span>
+              <span class="shortcut">Configurable</span>
+            </button>
+
+            <button class="action-button" data-action="mute-other-tabs">
+              <span class="action-title">Mutear las demás</span>
+              <span class="shortcut">Configurable</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="action-group">
+          <div class="section-title">Cierre de pestañas</div>
+
+          <div class="action-grid">
+            <button class="action-button" data-action="close-other-tabs">
+              <span class="action-title">Cerrar las demás</span>
+              <span class="shortcut">Alt Shift X</span>
+            </button>
+
+            <button class="action-button" data-action="close-duplicate-tabs">
+              <span class="action-title">Cerrar duplicadas</span>
+              <span class="shortcut">Configurable</span>
+            </button>
+
+            <button class="action-button" data-action="close-tabs-to-left">
+              <span class="action-title">Cerrar izquierda</span>
+              <span class="shortcut">Configurable</span>
+            </button>
+
+            <button class="action-button" data-action="close-tabs-to-right">
+              <span class="action-title">Cerrar derecha</span>
+              <span class="shortcut">Configurable</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div id="status" class="status"></div>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
