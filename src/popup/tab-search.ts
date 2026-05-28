@@ -1,6 +1,8 @@
 import { getRequiredElement, createElement, setStatus } from "./dom.js";
 import { formatTabUrl } from "../shared/tab-utils.js";
 import { refreshPanelData } from "./actions-panel.js";
+import { recordClosedTabs } from "../shared/undo-history.js";
+import { refreshHistory } from "./history.js";
 
 let searchInput: HTMLInputElement;
 let resultsContainer: HTMLDivElement;
@@ -207,6 +209,7 @@ async function handleSearchAction(
       case "close":
         await closeTab(tabId);
         setStatus("Tab closed", "success");
+        await refreshHistory();
         break;
 
       default:
@@ -252,11 +255,21 @@ async function handleBulkClose(): Promise<void> {
     return;
   }
 
-  await chrome.tabs.remove(tabIds);
+  const tabs = await getTabsById(tabIds);
+  if (tabs.length === 0) {
+    setStatus("Selected tabs are no longer available", "error");
+    selectedTabIds.clear();
+    await renderSearchResults();
+    return;
+  }
+
+  await recordClosedTabs("close-selected-tabs", tabs);
+  await chrome.tabs.remove(tabs.map((tab) => tab.id as number));
   setStatus("Selected tabs closed", "success");
   selectedTabIds.clear();
   await renderSearchResults();
   await refreshPanelData();
+  await refreshHistory();
 }
 
 async function handleBulkMute(mute: boolean): Promise<void> {
@@ -346,5 +359,21 @@ async function togglePinTab(tabId: number): Promise<void> {
 }
 
 async function closeTab(tabId: number): Promise<void> {
+  const tabs = await getTabsById([tabId]);
+  await recordClosedTabs("close-selected-tabs", tabs);
   await chrome.tabs.remove(tabId);
+}
+
+async function getTabsById(tabIds: number[]): Promise<chrome.tabs.Tab[]> {
+  const tabs = await Promise.all(
+    tabIds.map(async (tabId) => {
+      try {
+        return await chrome.tabs.get(tabId);
+      } catch {
+        return undefined;
+      }
+    })
+  );
+
+  return tabs.filter((tab): tab is chrome.tabs.Tab => tab !== undefined);
 }

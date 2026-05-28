@@ -7,8 +7,9 @@ import {
   validateImportedData,
   mergeImportedSessions,
   mergeImportedSnippets,
-  SavedSession
+  loadSettings
 } from "../shared/storage.js";
+import type { SavedSession } from "../shared/storage.js";
 import { getCurrentWindowTabs, isInternalUrl } from "../shared/tab-utils.js";
 import { refreshSnippets } from "./snippets.js";
 
@@ -56,6 +57,20 @@ async function handleSaveSession(): Promise<void> {
     return;
   }
 
+  try {
+    const message = await saveCurrentWindowSession(name);
+    sessionNameInput.value = "";
+    setStatus(message, "success");
+    void renderSessions();
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Unable to save session";
+    setStatus(message, "error");
+  }
+}
+
+export async function saveCurrentWindowSession(name?: string): Promise<string> {
+  const sessionName = await getSessionName(name);
   const tabs = await getCurrentWindowTabs();
   const sessionTabs = tabs
     .filter((tab) => tab.url !== undefined && !isInternalUrl(tab.url))
@@ -65,22 +80,37 @@ async function handleSaveSession(): Promise<void> {
     }));
 
   if (sessionTabs.length === 0) {
-    setStatus("No valid tabs to save", "error");
-    return;
+    throw new Error("No valid tabs to save");
   }
 
   const sessions = await loadSavedSessions();
   const newSession: SavedSession = {
     id: crypto.randomUUID(),
-    name,
+    name: sessionName,
     createdAt: new Date().toISOString(),
     tabs: sessionTabs
   };
 
   await saveSavedSessions([newSession, ...sessions]);
-  sessionNameInput.value = "";
-  setStatus("Session saved", "success");
-  void renderSessions();
+  await renderSessions();
+
+  return "Session saved";
+}
+
+async function getSessionName(name: string | undefined): Promise<string> {
+  const trimmedName = name?.trim();
+
+  if (trimmedName) {
+    return trimmedName;
+  }
+
+  const settings = await loadSettings();
+  const timestamp = new Date()
+    .toISOString()
+    .replace("T", " ")
+    .slice(0, 16);
+
+  return `${settings.defaultSessionNamePrefix} ${timestamp}`;
 }
 
 async function handleExportData(): Promise<void> {

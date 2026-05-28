@@ -21,6 +21,18 @@ export type CopyFormat = "markdown" | "plain" | "html" | "json";
 
 export type DomainRuleAction = "mute" | "pin" | "group";
 
+export interface ClosedTab {
+  url: string;
+  title: string;
+}
+
+export interface UndoEntry {
+  id: string;
+  action: string;
+  timestamp: string;
+  tabs: ClosedTab[];
+}
+
 export interface DomainRule {
   id: string;
   hostname: string;
@@ -57,7 +69,8 @@ const STORAGE_KEYS = {
   savedSnippets: "savedSnippets",
   savedWorkspaces: "savedWorkspaces",
   settings: "settings",
-  domainRules: "domainRules"
+  domainRules: "domainRules",
+  undoHistory: "undoHistory"
 } as const;
 
 function getStorage<T>(keys: string | string[] | object): Promise<T> {
@@ -134,6 +147,18 @@ export async function loadDomainRules(): Promise<DomainRule[]> {
 
 export async function saveDomainRules(rules: DomainRule[]): Promise<void> {
   await setStorage({ [STORAGE_KEYS.domainRules]: rules });
+}
+
+export async function loadUndoHistory(): Promise<UndoEntry[]> {
+  const result = await getStorage<{ undoHistory?: UndoEntry[] }>(
+    { undoHistory: [] }
+  );
+
+  return Array.isArray(result.undoHistory) ? result.undoHistory : [];
+}
+
+export async function saveUndoHistory(history: UndoEntry[]): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.undoHistory]: history });
 }
 
 export async function loadSettings(): Promise<Settings> {

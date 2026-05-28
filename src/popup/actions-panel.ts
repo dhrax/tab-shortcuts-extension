@@ -11,6 +11,7 @@ import {
 } from "../shared/tab-utils.js";
 import { getRequiredElement, setStatus } from "./dom.js";
 import { loadSettings } from "../shared/storage.js";
+import { refreshHistory } from "./history.js";
 
 let currentTabTitleElement: HTMLElement;
 let currentTabUrlElement: HTMLElement;
@@ -193,6 +194,9 @@ async function executeAction(action: TabAction): Promise<void> {
 
     if (response.success) {
       setStatus(response.message, "success");
+      if (destructiveActions.has(action)) {
+        await refreshHistory();
+      }
     } else {
       setStatus(response.message, "error");
     }

@@ -6,6 +6,7 @@ import {
   isInternalUrl
 } from "../shared/tab-utils.js";
 import { loadSettings } from "../shared/storage.js";
+import { recordClosedTabs } from "./undo.js";
 
 async function duplicateCurrentTab(): Promise<void> {
   const tab = await getCurrentTab();
@@ -74,7 +75,7 @@ async function closeDuplicateTabs(): Promise<void> {
     }
   }
 
-  await closeTabsById(duplicateTabIds);
+  await closeTabsById(duplicateTabIds, "close-duplicate-tabs");
 }
 
 async function closeTabsToLeft(): Promise<void> {
@@ -93,7 +94,7 @@ async function closeTabsToLeft(): Promise<void> {
     .filter((tab) => tab.index < currentTab.index)
     .map((tab) => tab.id as number);
 
-  await closeTabsById(tabIdsToClose);
+  await closeTabsById(tabIdsToClose, "close-tabs-to-left");
 }
 
 async function closeTabsToRight(): Promise<void> {
@@ -112,7 +113,7 @@ async function closeTabsToRight(): Promise<void> {
     .filter((tab) => tab.index > currentTab.index)
     .map((tab) => tab.id as number);
 
-  await closeTabsById(tabIdsToClose);
+  await closeTabsById(tabIdsToClose, "close-tabs-to-right");
 }
 
 async function closeOtherTabs(): Promise<void> {
@@ -131,7 +132,7 @@ async function closeOtherTabs(): Promise<void> {
     .filter((tab) => !shouldSkipTabForClose(tab, settings.ignorePinnedTabs))
     .map((tab) => tab.id as number);
 
-  await closeTabsById(tabIdsToClose);
+  await closeTabsById(tabIdsToClose, "close-other-tabs");
 }
 
 function shouldSkipTabForClose(tab: chrome.tabs.Tab, ignorePinnedTabs: boolean): boolean {
@@ -226,10 +227,28 @@ async function sortTabsByDomain(): Promise<void> {
   await chrome.tabs.move(tabIds, { index: pinnedCount });
 }
 
-async function closeTabsById(tabIds: number[]): Promise<void> {
+async function closeTabsById(tabIds: number[], action: string = "close tabs"): Promise<void> {
   if (tabIds.length === 0) {
     return;
   }
+
+  const tabs = await Promise.all(
+    tabIds.map(
+      (id) =>
+        new Promise<chrome.tabs.Tab | undefined>((resolve) => {
+          chrome.tabs.get(id, (tab) => {
+            if (chrome.runtime.lastError) {
+              resolve(undefined);
+            } else {
+              resolve(tab);
+            }
+          });
+        })
+    )
+  );
+
+  const validTabs = tabs.filter((tab): tab is chrome.tabs.Tab => tab !== undefined);
+  await recordClosedTabs(action, validTabs);
 
   await chrome.tabs.remove(tabIds);
 }

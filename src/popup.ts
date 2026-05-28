@@ -6,6 +6,8 @@ import { initializeWorkspaces } from "./popup/workspaces.js";
 import { initializeDomainRules } from "./popup/domain-rules.js";
 import { initializeLinkCopy } from "./popup/link-copy.js";
 import { initializeSnippets } from "./popup/snippets.js";
+import { initializeHistory } from "./popup/history.js";
+import { initializeCommandPalette } from "./popup/command-palette.js";
 import { setStatus } from "./popup/dom.js";
 
 function initializeOptionsButton(): void {
@@ -29,13 +31,15 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeOptionsButton();
 
   void Promise.all([
+    initializeCommandPalette(),
     initializeActionsPanel(),
     initializeTabSearch(),
     initializeSessions(),
     initializeWorkspaces(),
     initializeDomainRules(),
     initializeLinkCopy(),
-    initializeSnippets()
+    initializeSnippets(),
+    initializeHistory()
   ]).catch((error: unknown) => {
     const message =
       error instanceof Error

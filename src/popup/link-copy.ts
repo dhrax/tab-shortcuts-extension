@@ -1,6 +1,7 @@
 import { getRequiredElement, setStatus } from "./dom.js";
 import { getCurrentTab, getCurrentWindowTabs, isInternalUrl } from "../shared/tab-utils.js";
-import { loadSettings, CopyFormat } from "../shared/storage.js";
+import { loadSettings } from "../shared/storage.js";
+import type { CopyFormat } from "../shared/storage.js";
 
 let formatSelect: HTMLSelectElement;
 
@@ -35,31 +36,36 @@ function getCurrentFormat(): CopyFormat {
 async function handleCopyAction(action: string): Promise<void> {
   try {
     setStatus("Copying to clipboard...");
-    const format = getCurrentFormat();
-
-    switch (action) {
-      case "current-tab":
-        await copyCurrentTab(format);
-        break;
-      case "current-window":
-        await copyCurrentWindowTabs(format);
-        break;
-      case "all-tabs":
-        await copyAllTabs(format);
-        break;
-      case "current-domain":
-        await copyCurrentDomainTabs(format);
-        break;
-      default:
-        setStatus("Invalid action", "error");
-        return;
-    }
-
+    await copyLinks(action);
     setStatus("Text copied", "success");
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Unable to copy";
     setStatus(errorMessage, "error");
+  }
+}
+
+export async function copyLinks(
+  action: string,
+  formatOverride?: CopyFormat
+): Promise<void> {
+  const format = formatOverride ?? getCurrentFormat();
+
+  switch (action) {
+    case "current-tab":
+      await copyCurrentTab(format);
+      break;
+    case "current-window":
+      await copyCurrentWindowTabs(format);
+      break;
+    case "all-tabs":
+      await copyAllTabs(format);
+      break;
+    case "current-domain":
+      await copyCurrentDomainTabs(format);
+      break;
+    default:
+      throw new Error("Invalid action");
   }
 }
 

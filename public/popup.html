@@ -20,6 +20,13 @@
         </div>
       </header>
 
+      <section class="card command-palette">
+        <div class="form-row">
+          <input id="command-search-input" type="search" placeholder="Search commands" autocomplete="off" />
+        </div>
+        <div id="command-results" class="command-results"></div>
+      </section>
+
       <section class="card">
         <div class="top-row">
           <div>
@@ -84,6 +91,17 @@
             <button id="confirm-action-button" type="button" class="small-button danger">Confirm</button>
             <button id="cancel-action-button" type="button" class="small-button">Cancel</button>
           </div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-heading">
+            <div class="section-title">History</div>
+            <div class="history-actions">
+              <button id="undo-button" type="button" class="small-button">Undo last action</button>
+              <button id="clear-history-button" type="button" class="small-button">Clear</button>
+            </div>
+          </div>
+          <div id="undo-history-list" class="history-list"></div>
         </div>
 
         <div id="status" class="status"></div>
