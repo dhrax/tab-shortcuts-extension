@@ -29,6 +29,12 @@
         margin-bottom: 10px;
       }
 
+      .header-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
       .title {
         margin: 0;
         font-size: 17px;
@@ -206,6 +212,23 @@
         gap: 8px;
       }
 
+      .search-actions,
+      .workspace-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        align-items: center;
+      }
+
+      .selected-count {
+        padding: 8px 10px;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        background: #111827;
+        color: #d1d5db;
+        font-size: 11px;
+      }
+
       .form-row {
         display: grid;
         gap: 8px;
@@ -328,7 +351,10 @@
           <div class="subtitle">Productivity panel</div>
         </div>
 
-        <div class="open-shortcut">Alt + Shift + A</div>
+        <div class="header-actions">
+          <button id="open-options-button" type="button" class="small-button">Options</button>
+          <div class="open-shortcut">Alt + Shift + A</div>
+        </div>
       </header>
 
       <section class="card">
@@ -365,6 +391,7 @@
         <button type="button" class="tab-button active" data-section="actions-section">Actions</button>
         <button type="button" class="tab-button" data-section="search-section">Search</button>
         <button type="button" class="tab-button" data-section="sessions-section">Sessions</button>
+        <button type="button" class="tab-button" data-section="workspaces-section">Workspaces</button>
         <button type="button" class="tab-button" data-section="links-section">Links</button>
         <button type="button" class="tab-button" data-section="snippets-section">Snippets</button>
       </nav>
@@ -401,6 +428,14 @@
         <div class="form-row">
           <input id="tab-search-input" type="search" placeholder="Search by title or URL" />
         </div>
+        <div class="search-actions">
+          <div id="selected-count" class="selected-count">0 selected</div>
+          <button id="close-selected-button" type="button" class="small-button danger">Close selected</button>
+          <button id="mute-selected-button" type="button" class="small-button">Mute selected</button>
+          <button id="unmute-selected-button" type="button" class="small-button">Unmute selected</button>
+          <button id="pin-selected-button" type="button" class="small-button">Pin selected</button>
+          <button id="move-selected-button" type="button" class="small-button">Move selected to new window</button>
+        </div>
         <div id="tab-search-results" class="search-results"></div>
       </section>
 
@@ -417,13 +452,36 @@
         <div id="sessions-list" class="sessions-list"></div>
       </section>
 
+      <section id="workspaces-section" class="card section-panel hidden">
+        <div class="section-title">Workspaces</div>
+        <div class="form-row">
+          <input id="workspace-name-input" type="text" placeholder="Workspace name" />
+          <input id="workspace-url-input" type="text" placeholder="Workspace URL" />
+          <button id="add-workspace-button" type="button" class="small-button">Add workspace</button>
+        </div>
+        <div class="form-row">
+          <button id="add-current-tab-workspace-button" type="button" class="small-button">Add current tab to workspace</button>
+          <button id="add-window-tabs-workspace-button" type="button" class="small-button">Add window tabs to workspace</button>
+        </div>
+        <div id="workspaces-list" class="sessions-list"></div>
+      </section>
+
       <section id="links-section" class="card section-panel hidden">
         <div class="section-title">Copy links</div>
+        <div class="form-row">
+          <label for="copy-format-select" class="section-title">Format</label>
+          <select id="copy-format-select">
+            <option value="markdown">Markdown</option>
+            <option value="plain">Plain text</option>
+            <option value="html">HTML</option>
+            <option value="json">JSON</option>
+          </select>
+        </div>
         <div class="copy-grid">
-          <button type="button" class="small-button" data-copy-action="current-url-plain">Current URL</button>
-          <button type="button" class="small-button" data-copy-action="current-url-markdown">Current URL MD</button>
-          <button type="button" class="small-button" data-copy-action="window-urls-plain">All URLs</button>
-          <button type="button" class="small-button" data-copy-action="window-urls-markdown">All MD</button>
+          <button type="button" class="small-button" data-copy-action="current-tab">Current tab</button>
+          <button type="button" class="small-button" data-copy-action="current-window">Current window</button>
+          <button type="button" class="small-button" data-copy-action="all-tabs">All tabs</button>
+          <button type="button" class="small-button" data-copy-action="current-domain">Current domain</button>
         </div>
       </section>
 

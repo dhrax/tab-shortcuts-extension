@@ -10,6 +10,7 @@ import {
   getCurrentWindowTabs
 } from "../shared/tab-utils.js";
 import { getRequiredElement, setStatus } from "./dom.js";
+import { loadSettings } from "../shared/storage.js";
 
 let currentTabTitleElement: HTMLElement;
 let currentTabUrlElement: HTMLElement;
@@ -25,6 +26,13 @@ let cancelActionButton: HTMLButtonElement;
 let pendingConfirmationAction: TabAction | null = null;
 
 const confirmActions = new Set<TabAction>([
+  "close-duplicate-tabs",
+  "close-tabs-to-left",
+  "close-tabs-to-right",
+  "close-other-tabs"
+]);
+
+const destructiveActions = new Set<TabAction>([
   "close-duplicate-tabs",
   "close-tabs-to-left",
   "close-tabs-to-right",
@@ -108,8 +116,15 @@ function bindActionButtons(): void {
   });
 }
 
-function handleActionClick(action: TabAction): void {
+async function handleActionClick(action: TabAction): Promise<void> {
   if (confirmActions.has(action)) {
+    const settings = await loadSettings();
+
+    if (destructiveActions.has(action) && !settings.confirmBeforeClosing) {
+      await executeAction(action);
+      return;
+    }
+
     if (pendingConfirmationAction === action) {
       return;
     }
@@ -118,7 +133,7 @@ function handleActionClick(action: TabAction): void {
     return;
   }
 
-  void executeAction(action);
+  await executeAction(action);
 }
 
 async function handleConfirm(): Promise<void> {

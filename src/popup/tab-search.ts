@@ -4,17 +4,72 @@ import { refreshPanelData } from "./actions-panel.js";
 
 let searchInput: HTMLInputElement;
 let resultsContainer: HTMLDivElement;
+let closeSelectedButton: HTMLButtonElement;
+let muteSelectedButton: HTMLButtonElement;
+let unmuteSelectedButton: HTMLButtonElement;
+let pinSelectedButton: HTMLButtonElement;
+let moveSelectedButton: HTMLButtonElement;
+let selectedCountElement: HTMLElement;
+
+const selectedTabIds = new Set<number>();
 
 export function initializeTabSearch(): void {
   searchInput = getRequiredElement<HTMLInputElement>("tab-search-input");
   resultsContainer = getRequiredElement<HTMLDivElement>("tab-search-results");
+  closeSelectedButton = getRequiredElement<HTMLButtonElement>(
+    "close-selected-button"
+  );
+  muteSelectedButton = getRequiredElement<HTMLButtonElement>(
+    "mute-selected-button"
+  );
+  unmuteSelectedButton = getRequiredElement<HTMLButtonElement>(
+    "unmute-selected-button"
+  );
+  pinSelectedButton = getRequiredElement<HTMLButtonElement>(
+    "pin-selected-button"
+  );
+  moveSelectedButton = getRequiredElement<HTMLButtonElement>(
+    "move-selected-button"
+  );
+  selectedCountElement = getRequiredElement<HTMLElement>(
+    "selected-count"
+  );
 
   searchInput.addEventListener("input", () => {
     void renderSearchResults();
   });
 
+  closeSelectedButton.addEventListener("click", () => {
+    void handleBulkClose();
+  });
+
+  muteSelectedButton.addEventListener("click", () => {
+    void handleBulkMute(true);
+  });
+
+  unmuteSelectedButton.addEventListener("click", () => {
+    void handleBulkMute(false);
+  });
+
+  pinSelectedButton.addEventListener("click", () => {
+    void handleBulkPin();
+  });
+
+  moveSelectedButton.addEventListener("click", () => {
+    void handleBulkMoveToNewWindow();
+  });
+
   resultsContainer.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
+    const checkbox = target.closest("input[data-search-checkbox]") as
+      | HTMLInputElement
+      | null;
+
+    if (checkbox !== null) {
+      updateSelection(checkbox);
+      return;
+    }
+
     const button = target.closest("button[data-search-action]") as
       | HTMLButtonElement
       | null;
@@ -63,6 +118,7 @@ async function renderSearchResults(): Promise<void> {
     const emptyMessage = createElement("div", "empty-message");
     emptyMessage.textContent = "No tabs found";
     resultsContainer.appendChild(emptyMessage);
+    updateSelectedCount();
     return;
   }
 
@@ -76,6 +132,16 @@ async function renderSearchResults(): Promise<void> {
     const title = createElement("div", "search-item-title");
     const url = createElement("div", "search-item-url");
     const actions = createElement("div", "search-item-actions");
+    const checkboxWrapper = createElement("label", "search-item-checkbox");
+    const checkbox = createElement("input", "") as HTMLInputElement;
+
+    checkbox.type = "checkbox";
+    checkbox.dataset.searchCheckbox = "true";
+    checkbox.dataset.tabId = tab.id.toString();
+    checkbox.checked = selectedTabIds.has(tab.id);
+
+    checkboxWrapper.appendChild(checkbox);
+    checkboxWrapper.appendChild(createElement("span", "checkbox-label"));
 
     title.textContent = tab.title ?? "Untitled";
     url.textContent = formatTabUrl(tab.url);
@@ -84,7 +150,7 @@ async function renderSearchResults(): Promise<void> {
       "data-search-action": "goto",
       "data-tab-id": tab.id.toString()
     });
-    goButton.textContent = "Ir";
+    goButton.textContent = "Go";
 
     const muteButton = createElement("button", "small-button", {
       "data-search-action": "toggle-mute",
@@ -107,9 +173,12 @@ async function renderSearchResults(): Promise<void> {
     info.appendChild(title);
     info.appendChild(url);
     actions.append(goButton, muteButton, pinButton, closeButton);
+    info.appendChild(checkboxWrapper);
     card.append(info, actions);
     resultsContainer.appendChild(card);
   });
+
+  updateSelectedCount();
 }
 
 async function handleSearchAction(
@@ -152,6 +221,102 @@ async function handleSearchAction(
       error instanceof Error ? error.message : "Error modifying the tab";
     setStatus(errorMessage, "error");
   }
+}
+
+function updateSelection(checkbox: HTMLInputElement): void {
+  const tabIdValue = checkbox.dataset.tabId;
+
+  if (!tabIdValue) {
+    return;
+  }
+
+  const tabId = Number(tabIdValue);
+
+  if (checkbox.checked) {
+    selectedTabIds.add(tabId);
+  } else {
+    selectedTabIds.delete(tabId);
+  }
+
+  updateSelectedCount();
+}
+
+function updateSelectedCount(): void {
+  selectedCountElement.textContent = `${selectedTabIds.size} selected`;
+}
+
+async function handleBulkClose(): Promise<void> {
+  const tabIds = Array.from(selectedTabIds);
+  if (tabIds.length === 0) {
+    setStatus("No tabs selected", "error");
+    return;
+  }
+
+  await chrome.tabs.remove(tabIds);
+  setStatus("Selected tabs closed", "success");
+  selectedTabIds.clear();
+  await renderSearchResults();
+  await refreshPanelData();
+}
+
+async function handleBulkMute(mute: boolean): Promise<void> {
+  const tabIds = Array.from(selectedTabIds);
+
+  if (tabIds.length === 0) {
+    setStatus("No tabs selected", "error");
+    return;
+  }
+
+  for (const tabId of tabIds) {
+    const tab = await chrome.tabs.get(tabId);
+    await chrome.tabs.update(tabId, {
+      muted: mute ? true : false
+    });
+  }
+
+  setStatus(mute ? "Selected tabs muted" : "Selected tabs unmuted", "success");
+  await renderSearchResults();
+  await refreshPanelData();
+}
+
+async function handleBulkPin(): Promise<void> {
+  const tabIds = Array.from(selectedTabIds);
+
+  if (tabIds.length === 0) {
+    setStatus("No tabs selected", "error");
+    return;
+  }
+
+  for (const tabId of tabIds) {
+    const tab = await chrome.tabs.get(tabId);
+    await chrome.tabs.update(tabId, { pinned: true });
+  }
+
+  setStatus("Selected tabs pinned", "success");
+  await renderSearchResults();
+  await refreshPanelData();
+}
+
+async function handleBulkMoveToNewWindow(): Promise<void> {
+  const tabIds = Array.from(selectedTabIds);
+
+  if (tabIds.length === 0) {
+    setStatus("No tabs selected", "error");
+    return;
+  }
+
+  const newWindow = await chrome.windows.create({ tabId: tabIds[0], focused: true });
+  if (tabIds.length > 1 && newWindow.id !== undefined) {
+    await chrome.tabs.move(tabIds.slice(1), {
+      windowId: newWindow.id,
+      index: -1
+    });
+  }
+
+  setStatus("Selected tabs moved to new window", "success");
+  selectedTabIds.clear();
+  await renderSearchResults();
+  await refreshPanelData();
 }
 
 async function goToTab(tabId: number): Promise<void> {

@@ -5,6 +5,7 @@ import {
   getExistingTabIds,
   isInternalUrl
 } from "../shared/tab-utils.js";
+import { loadSettings } from "../shared/storage.js";
 
 async function duplicateCurrentTab(): Promise<void> {
   const tab = await getCurrentTab();
@@ -51,6 +52,7 @@ async function muteOtherTabs(): Promise<void> {
 }
 
 async function closeDuplicateTabs(): Promise<void> {
+  const settings = await loadSettings();
   const tabs = await getCurrentWindowTabs();
 
   const seenUrls = new Set<string>();
@@ -61,7 +63,7 @@ async function closeDuplicateTabs(): Promise<void> {
       continue;
     }
 
-    if (tab.pinned || isInternalUrl(tab.url)) {
+    if (shouldSkipTabForClose(tab, settings.ignorePinnedTabs) || isInternalUrl(tab.url)) {
       continue;
     }
 
@@ -76,6 +78,7 @@ async function closeDuplicateTabs(): Promise<void> {
 }
 
 async function closeTabsToLeft(): Promise<void> {
+  const settings = await loadSettings();
   const currentTab = await getCurrentTab();
 
   if (currentTab?.id === undefined) {
@@ -86,7 +89,7 @@ async function closeTabsToLeft(): Promise<void> {
 
   const tabIdsToClose = tabs
     .filter((tab) => tab.id !== undefined)
-    .filter((tab) => !tab.pinned)
+    .filter((tab) => !shouldSkipTabForClose(tab, settings.ignorePinnedTabs))
     .filter((tab) => tab.index < currentTab.index)
     .map((tab) => tab.id as number);
 
@@ -94,6 +97,7 @@ async function closeTabsToLeft(): Promise<void> {
 }
 
 async function closeTabsToRight(): Promise<void> {
+  const settings = await loadSettings();
   const currentTab = await getCurrentTab();
 
   if (currentTab?.id === undefined) {
@@ -104,7 +108,7 @@ async function closeTabsToRight(): Promise<void> {
 
   const tabIdsToClose = tabs
     .filter((tab) => tab.id !== undefined)
-    .filter((tab) => !tab.pinned)
+    .filter((tab) => !shouldSkipTabForClose(tab, settings.ignorePinnedTabs))
     .filter((tab) => tab.index > currentTab.index)
     .map((tab) => tab.id as number);
 
@@ -112,6 +116,7 @@ async function closeTabsToRight(): Promise<void> {
 }
 
 async function closeOtherTabs(): Promise<void> {
+  const settings = await loadSettings();
   const currentTab = await getCurrentTab();
 
   if (currentTab?.id === undefined) {
@@ -123,10 +128,22 @@ async function closeOtherTabs(): Promise<void> {
   const tabIdsToClose = tabs
     .filter((tab) => tab.id !== undefined)
     .filter((tab) => tab.id !== currentTab.id)
-    .filter((tab) => !tab.pinned)
+    .filter((tab) => !shouldSkipTabForClose(tab, settings.ignorePinnedTabs))
     .map((tab) => tab.id as number);
 
   await closeTabsById(tabIdsToClose);
+}
+
+function shouldSkipTabForClose(tab: chrome.tabs.Tab, ignorePinnedTabs: boolean): boolean {
+  if (tab.id === undefined || tab.url === undefined) {
+    return true;
+  }
+
+  if (ignorePinnedTabs && tab.pinned) {
+    return true;
+  }
+
+  return false;
 }
 
 function getTabHostname(url: string | undefined): string | null {

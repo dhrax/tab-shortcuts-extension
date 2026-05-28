@@ -17,9 +17,35 @@ export interface Snippet {
   createdAt: string;
 }
 
+export type CopyFormat = "markdown" | "plain" | "html" | "json";
+
+export interface Workspace {
+  id: string;
+  name: string;
+  urls: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Settings {
+  confirmBeforeClosing: boolean;
+  ignorePinnedTabs: boolean;
+  defaultCopyFormat: CopyFormat;
+  defaultSessionNamePrefix: string;
+}
+
+export const DEFAULT_SETTINGS: Settings = {
+  confirmBeforeClosing: true,
+  ignorePinnedTabs: true,
+  defaultCopyFormat: "markdown",
+  defaultSessionNamePrefix: "Session"
+};
+
 const STORAGE_KEYS = {
   savedSessions: "savedSessions",
-  savedSnippets: "savedSnippets"
+  savedSnippets: "savedSnippets",
+  savedWorkspaces: "savedWorkspaces",
+  settings: "settings"
 } as const;
 
 function getStorage<T>(keys: string | string[] | object): Promise<T> {
@@ -62,6 +88,50 @@ export async function loadSnippets(): Promise<Snippet[]> {
 
 export async function saveSnippets(snippets: Snippet[]): Promise<void> {
   await setStorage({ [STORAGE_KEYS.savedSnippets]: snippets });
+}
+
+export async function loadWorkspaces(): Promise<Workspace[]> {
+  const result = await getStorage<{ savedWorkspaces?: Workspace[] }>(
+    { savedWorkspaces: [] }
+  );
+
+  return Array.isArray(result.savedWorkspaces) ? result.savedWorkspaces : [];
+}
+
+export async function saveWorkspaces(workspaces: Workspace[]): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.savedWorkspaces]: workspaces });
+}
+
+export async function loadSettings(): Promise<Settings> {
+  const result = await getStorage<{ settings?: Partial<Settings> }>(
+    { settings: {} }
+  );
+
+  return {
+    ...DEFAULT_SETTINGS,
+    ...(result.settings ?? {})
+  };
+}
+
+export async function saveSettings(settings: Settings): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.settings]: settings });
+}
+
+export function isValidWorkspace(value: unknown): value is Workspace {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const item = value as Partial<Workspace>;
+
+  return (
+    typeof item.id === "string" &&
+    typeof item.name === "string" &&
+    Array.isArray(item.urls) &&
+    item.urls.every((url) => typeof url === "string") &&
+    typeof item.createdAt === "string" &&
+    typeof item.updatedAt === "string"
+  );
 }
 
 export interface ImportedData {

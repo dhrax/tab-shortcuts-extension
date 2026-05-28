@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tab Shortcuts Settings</title>
+    <style>
+      body {
+        margin: 0;
+        min-width: 380px;
+        padding: 18px;
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        background: #111827;
+        color: #f9fafb;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      p {
+        margin: 0 0 20px;
+        color: #9ca3af;
+        font-size: 13px;
+      }
+
+      .card {
+        background: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .form-row {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+
+      input[type="text"], select {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #4b5563;
+        border-radius: 8px;
+        background: #111827;
+        color: #f9fafb;
+      }
+
+      input[type="checkbox"] {
+        accent-color: #60a5fa;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      button {
+        cursor: pointer;
+        padding: 10px 14px;
+        border: none;
+        border-radius: 10px;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      #status {
+        margin-top: 10px;
+        font-size: 13px;
+      }
+
+      #status.success {
+        color: #86efac;
+      }
+
+      #status.error {
+        color: #fca5a5;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Tab Shortcuts Settings</h1>
+    <p>Adjust the extension defaults and confirmation behavior.</p>
+
+    <div class="card">
+      <div class="form-row">
+        <label>
+          <input id="confirm-before-closing" type="checkbox" />
+          Confirm before closing tabs
+        </label>
+        <label>
+          <input id="ignore-pinned-tabs" type="checkbox" />
+          Ignore pinned tabs for tab closing actions
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label for="default-copy-format">Default copy format</label>
+        <select id="default-copy-format">
+          <option value="markdown">Markdown</option>
+          <option value="plain">Plain text</option>
+          <option value="html">HTML</option>
+          <option value="json">JSON</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="default-session-name-prefix">Default session name prefix</label>
+        <input id="default-session-name-prefix" type="text" placeholder="Session" />
+      </div>
+
+      <div class="buttons">
+        <button id="save-settings-button" type="button">Save settings</button>
+      </div>
+
+      <div id="status" aria-live="polite"></div>
+    </div>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
