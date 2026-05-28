@@ -74,7 +74,7 @@ async function handleCreateSnippet(): Promise<void> {
   await refreshSnippets();
 }
 
-async function refreshSnippets(): Promise<void> {
+export async function refreshSnippets(): Promise<void> {
   const snippets = await loadSnippets();
   snippetsList.innerHTML = "";
 
