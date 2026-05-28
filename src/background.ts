@@ -1,4 +1,5 @@
 import { handleTabAction } from "./background/tab-actions.js";
+import { initializeDomainRuleListeners } from "./background/domain-rules.js";
 import type { ExtensionMessage, ExtensionResponse } from "./shared/tab-action.js";
 import { isTabAction } from "./shared/tab-action.js";
 
@@ -10,6 +11,8 @@ chrome.commands.onCommand.addListener((command: string) => {
 
   void handleTabAction(command);
 });
+
+initializeDomainRuleListeners();
 
 chrome.runtime.onMessage.addListener(
   (

@@ -19,6 +19,17 @@ export interface Snippet {
 
 export type CopyFormat = "markdown" | "plain" | "html" | "json";
 
+export type DomainRuleAction = "mute" | "pin" | "group";
+
+export interface DomainRule {
+  id: string;
+  hostname: string;
+  action: DomainRuleAction;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -45,20 +56,31 @@ const STORAGE_KEYS = {
   savedSessions: "savedSessions",
   savedSnippets: "savedSnippets",
   savedWorkspaces: "savedWorkspaces",
-  settings: "settings"
+  settings: "settings",
+  domainRules: "domainRules"
 } as const;
 
 function getStorage<T>(keys: string | string[] | object): Promise<T> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     chrome.storage.local.get(keys, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+
       resolve(result as T);
     });
   });
 }
 
 function setStorage(value: Record<string, unknown>): Promise<void> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     chrome.storage.local.set(value, () => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+
       resolve();
     });
   });
@@ -100,6 +122,18 @@ export async function loadWorkspaces(): Promise<Workspace[]> {
 
 export async function saveWorkspaces(workspaces: Workspace[]): Promise<void> {
   await setStorage({ [STORAGE_KEYS.savedWorkspaces]: workspaces });
+}
+
+export async function loadDomainRules(): Promise<DomainRule[]> {
+  const result = await getStorage<{ domainRules?: DomainRule[] }>(
+    { domainRules: [] }
+  );
+
+  return Array.isArray(result.domainRules) ? result.domainRules : [];
+}
+
+export async function saveDomainRules(rules: DomainRule[]): Promise<void> {
+  await setStorage({ [STORAGE_KEYS.domainRules]: rules });
 }
 
 export async function loadSettings(): Promise<Settings> {

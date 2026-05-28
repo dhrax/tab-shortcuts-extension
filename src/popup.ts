@@ -3,6 +3,7 @@ import { initializeActionsPanel } from "./popup/actions-panel.js";
 import { initializeTabSearch } from "./popup/tab-search.js";
 import { initializeSessions } from "./popup/sessions.js";
 import { initializeWorkspaces } from "./popup/workspaces.js";
+import { initializeDomainRules } from "./popup/domain-rules.js";
 import { initializeLinkCopy } from "./popup/link-copy.js";
 import { initializeSnippets } from "./popup/snippets.js";
 import { setStatus } from "./popup/dom.js";
@@ -32,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeTabSearch(),
     initializeSessions(),
     initializeWorkspaces(),
+    initializeDomainRules(),
     initializeLinkCopy(),
     initializeSnippets()
   ]).catch((error: unknown) => {

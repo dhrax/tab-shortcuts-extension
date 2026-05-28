@@ -1,27 +1,23 @@
 export function initializeNavigation(): void {
-  const tabButtons = Array.from(
-    document.querySelectorAll<HTMLButtonElement>("[data-section]")
-  );
+  const viewSelector = document.getElementById("view-selector") as HTMLSelectElement | null;
   const sections = Array.from(
     document.querySelectorAll<HTMLElement>(".section-panel")
   );
 
-  function openSection(sectionId: string): void {
-    tabButtons.forEach((button) => {
-      button.classList.toggle("active", button.dataset.section === sectionId);
-    });
+  if (!viewSelector) {
+    return;
+  }
 
+  function openSection(sectionId: string): void {
     sections.forEach((section) => {
       section.classList.toggle("hidden", section.id !== sectionId);
     });
+
+    viewSelector!.value = sectionId;
   }
 
-  tabButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (button.dataset.section) {
-        openSection(button.dataset.section);
-      }
-    });
+  viewSelector.addEventListener("change", () => {
+    openSection(viewSelector.value);
   });
 
   openSection("actions-section");

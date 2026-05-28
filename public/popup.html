@@ -3,344 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Tab Shortcuts</title>
-
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        width: 380px;
-        margin: 0;
-        font-family: Inter, Arial, Helvetica, sans-serif;
-        background: #111827;
-        color: #f9fafb;
-      }
-
-      .panel {
-        padding: 12px;
-      }
-
-      .header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      .header-actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .title {
-        margin: 0;
-        font-size: 17px;
-        font-weight: 700;
-      }
-
-      .subtitle {
-        margin-top: 3px;
-        color: #9ca3af;
-        font-size: 11px;
-      }
-
-      .open-shortcut {
-        padding: 4px 7px;
-        border-radius: 7px;
-        background: #374151;
-        color: #d1d5db;
-        font-size: 10px;
-        white-space: nowrap;
-      }
-
-      .card {
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #374151;
-        border-radius: 12px;
-        background: #1f2937;
-      }
-
-      .section-title {
-        margin-bottom: 10px;
-        color: #d1d5db;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .tab-title {
-        overflow: hidden;
-        margin-bottom: 4px;
-        font-size: 13px;
-        font-weight: 700;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .tab-url {
-        overflow: hidden;
-        color: #9ca3af;
-        font-size: 11px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .top-row {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 10px;
-        align-items: center;
-      }
-
-      .badges {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-      }
-
-      .badge {
-        padding: 3px 6px;
-        border-radius: 999px;
-        background: #374151;
-        color: #d1d5db;
-        font-size: 10px;
-      }
-
-      .stats-inline {
-        display: grid;
-        grid-template-columns: repeat(3, 52px);
-        gap: 6px;
-      }
-
-      .stat {
-        padding: 7px;
-        border-radius: 9px;
-        background: #111827;
-        text-align: center;
-      }
-
-      .stat-value {
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      .stat-label {
-        margin-top: 1px;
-        color: #9ca3af;
-        font-size: 9px;
-      }
-
-      .tab-nav {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-        margin-bottom: 10px;
-      }
-
-      .tab-button {
-        padding: 8px 10px;
-        border: 1px solid #374151;
-        border-radius: 10px;
-        background: #111827;
-        color: #d1d5db;
-        font-size: 11px;
-        text-align: center;
-        cursor: pointer;
-      }
-
-      .tab-button.active,
-      .tab-button:hover {
-        background: #1f2937;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      .small-button {
-        border: 1px solid #374151;
-        border-radius: 10px;
-        background: #111827;
-        color: #f9fafb;
-        padding: 8px 10px;
-        font-size: 11px;
-        cursor: pointer;
-      }
-
-      .small-button:hover {
-        background: #1f2937;
-      }
-
-      .small-button.danger {
-        border-color: #b91c1c;
-        color: #fecaca;
-      }
-
-      .action-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .action-confirmation {
-        display: grid;
-        gap: 8px;
-        padding: 10px;
-        border: 1px solid #7f1d1d;
-        border-radius: 12px;
-        background: #111827;
-      }
-
-      .action-confirmation.hidden {
-        display: none;
-      }
-
-      .action-confirmation .confirmation-text {
-        color: #f9fafb;
-        font-size: 12px;
-      }
-
-      .confirmation-controls {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .search-actions,
-      .workspace-actions {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        align-items: center;
-      }
-
-      .selected-count {
-        padding: 8px 10px;
-        border: 1px solid #374151;
-        border-radius: 10px;
-        background: #111827;
-        color: #d1d5db;
-        font-size: 11px;
-      }
-
-      .form-row {
-        display: grid;
-        gap: 8px;
-      }
-
-      .form-row input,
-      .form-row textarea,
-      .form-row button,
-      .copy-grid {
-        width: 100%;
-      }
-
-      input,
-      textarea {
-        border: 1px solid #374151;
-        border-radius: 10px;
-        background: #111827;
-        color: #f9fafb;
-        padding: 10px;
-        font-size: 12px;
-      }
-
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-
-      .copy-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .search-results,
-      .sessions-list,
-      .snippets-list {
-        display: grid;
-        gap: 8px;
-        max-height: 260px;
-        overflow-y: auto;
-        padding-right: 2px;
-      }
-
-      .search-item,
-      .session-item,
-      .snippet-item {
-        padding: 10px;
-        border: 1px solid #374151;
-        border-radius: 12px;
-        background: #111827;
-      }
-
-      .search-item-info,
-      .session-item-header,
-      .snippet-item-header {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 8px;
-      }
-
-      .search-item-title,
-      .session-item-title,
-      .snippet-item-title {
-        font-weight: 700;
-        font-size: 13px;
-      }
-
-      .search-item-url,
-      .session-item-meta,
-      .snippet-item-meta {
-        color: #9ca3af;
-        font-size: 11px;
-        min-width: 0;
-      }
-
-      .search-item-actions,
-      .session-item-actions,
-      .snippet-item-actions {
-        display: grid;
-        gap: 6px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .snippet-item-content {
-        white-space: pre-wrap;
-        color: #d1d5db;
-        font-size: 12px;
-        margin-bottom: 8px;
-      }
-
-      .empty-message {
-        color: #9ca3af;
-        font-size: 12px;
-      }
-
-      .status {
-        min-height: 18px;
-        color: #9ca3af;
-        font-size: 11px;
-        margin-top: 8px;
-      }
-
-      .status.success {
-        color: #86efac;
-      }
-
-      .status.error {
-        color: #fca5a5;
-      }
-    </style>
+    <link rel="stylesheet" href="popup.css" />
   </head>
 
   <body>
@@ -387,14 +50,17 @@
         </div>
       </section>
 
-      <nav class="tab-nav">
-        <button type="button" class="tab-button active" data-section="actions-section">Actions</button>
-        <button type="button" class="tab-button" data-section="search-section">Search</button>
-        <button type="button" class="tab-button" data-section="sessions-section">Sessions</button>
-        <button type="button" class="tab-button" data-section="workspaces-section">Workspaces</button>
-        <button type="button" class="tab-button" data-section="links-section">Links</button>
-        <button type="button" class="tab-button" data-section="snippets-section">Snippets</button>
-      </nav>
+      <div class="view-selector-wrapper">
+        <select id="view-selector" class="view-selector">
+          <option value="actions-section">Actions</option>
+          <option value="search-section">Search</option>
+          <option value="sessions-section">Sessions</option>
+          <option value="workspaces-section">Workspaces</option>
+          <option value="rules-section">Rules</option>
+          <option value="links-section">Links</option>
+          <option value="snippets-section">Snippets</option>
+        </select>
+      </div>
 
       <section id="actions-section" class="card section-panel">
         <div class="section-title">Quick actions</div>
@@ -464,6 +130,21 @@
           <button id="add-window-tabs-workspace-button" type="button" class="small-button">Add window tabs to workspace</button>
         </div>
         <div id="workspaces-list" class="sessions-list"></div>
+      </section>
+
+      <section id="rules-section" class="card section-panel hidden">
+        <div class="section-title">Auto rules</div>
+        <div class="form-row">
+          <input id="rule-hostname-input" type="text" placeholder="Hostname or domain" />
+          <select id="rule-action-select">
+            <option value="mute">Auto mute</option>
+            <option value="pin">Auto pin</option>
+            <option value="group">Auto group</option>
+          </select>
+          <button id="add-rule-button" type="button" class="small-button">Add rule</button>
+        </div>
+        <div id="rules-list" class="rules-list"></div>
+        <div class="rule-note">Rules are optional and are created disabled by default.</div>
       </section>
 
       <section id="links-section" class="card section-panel hidden">
