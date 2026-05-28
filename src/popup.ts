@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const message =
       error instanceof Error
         ? error.message
-        : "Error inicializando el panel";
+        : "Error initializing the panel";
 
     setStatus(message, "error");
   });

@@ -182,6 +182,30 @@
         gap: 8px;
       }
 
+      .action-confirmation {
+        display: grid;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid #7f1d1d;
+        border-radius: 12px;
+        background: #111827;
+      }
+
+      .action-confirmation.hidden {
+        display: none;
+      }
+
+      .action-confirmation .confirmation-text {
+        color: #f9fafb;
+        font-size: 12px;
+      }
+
+      .confirmation-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
       .form-row {
         display: grid;
         gap: 8px;
@@ -357,6 +381,14 @@
           <button type="button" class="small-button" data-tab-action="close-tabs-to-right">Close right</button>
           <button type="button" class="small-button" data-tab-action="close-other-tabs">Close others</button>
           <button type="button" class="small-button" data-tab-action="toggle-pin-current-tab">Pin / Unpin</button>
+        </div>
+
+        <div id="action-confirmation" class="action-confirmation hidden" aria-live="polite">
+          <div id="action-confirm-text" class="confirmation-text"></div>
+          <div class="confirmation-controls">
+            <button id="confirm-action-button" type="button" class="small-button danger">Confirm</button>
+            <button id="cancel-action-button" type="button" class="small-button">Cancel</button>
+          </div>
         </div>
 
         <div id="status" class="status"></div>
