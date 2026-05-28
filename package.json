@@ -1,7 +1,7 @@
 {
   "name": "tab-shortcuts-extension",
   "version": "0.1.0",
-  "description": "Extensión para gestionar pestañas con atajos de teclado en Brave.",
+  "description": "Extension to manage tabs with keyboard shortcuts in Brave.",
   "type": "module",
   "scripts": {
     "build": "tsc && copyfiles -u 1 \"public/**/*\" dist",

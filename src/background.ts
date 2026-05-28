@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(
     if (!isTabAction(message.action)) {
       sendResponse({
         success: false,
-        message: "Acción no reconocida"
+        message: "Action not recognized"
       });
 
       return false;

@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Tab Shortcuts",
   "version": "0.1.0",
-  "description": "Atajos para duplicar, mutear y gestionar pestañas en Brave.",
-  "permissions": ["tabs"],
+  "description": "Shortcuts to duplicate, mute and manage tabs in Brave.",
+  "permissions": ["tabs", "storage", "clipboardWrite"],
   "action": {
     "default_title": "Tab Shortcuts",
     "default_popup": "popup.html"
@@ -22,34 +22,34 @@
       "suggested_key": {
         "default": "Alt+Shift+D"
       },
-      "description": "Duplicar pestaña actual"
+      "description": "Duplicate current tab"
     },
     "toggle-mute-current-tab": {
       "suggested_key": {
         "default": "Alt+Shift+M"
       },
-      "description": "Mutear o desmutear pestaña actual"
+      "description": "Mute or unmute current tab"
     },
     "close-other-tabs": {
       "suggested_key": {
         "default": "Alt+Shift+X"
       },
-      "description": "Cerrar todas las pestañas excepto la actual"
+      "description": "Close all tabs except current"
     },
     "mute-other-tabs": {
-      "description": "Mutear todas las pestañas excepto la actual"
+      "description": "Mute all other tabs"
     },
     "close-duplicate-tabs": {
-      "description": "Cerrar pestañas duplicadas por URL"
+      "description": "Close duplicate tabs by URL"
     },
     "close-tabs-to-left": {
-      "description": "Cerrar pestañas a la izquierda"
+      "description": "Close tabs to the left"
     },
     "close-tabs-to-right": {
-      "description": "Cerrar pestañas a la derecha"
+      "description": "Close tabs to the right"
     },
     "toggle-pin-current-tab": {
-      "description": "Fijar o desfijar pestaña actual"
+      "description": "Pin or unpin current tab"
     }
   }
 }   

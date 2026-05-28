@@ -155,34 +155,34 @@ export async function handleTabAction(action: TabAction): Promise<string> {
   switch (action) {
     case "duplicate-current-tab":
       await duplicateCurrentTab();
-      return "Pestaña duplicada";
+      return "Tab duplicated";
 
     case "toggle-mute-current-tab":
       await toggleMuteCurrentTab();
-      return "Estado de mute cambiado";
+      return "Mute state changed";
 
     case "mute-other-tabs":
       await muteOtherTabs();
-      return "Resto de pestañas muteadas";
+      return "Other tabs muted";
 
     case "close-duplicate-tabs":
       await closeDuplicateTabs();
-      return "Pestañas duplicadas cerradas";
+      return "Duplicate tabs closed";
 
     case "close-tabs-to-left":
       await closeTabsToLeft();
-      return "Pestañas de la izquierda cerradas";
+      return "Tabs to the left closed";
 
     case "close-tabs-to-right":
       await closeTabsToRight();
-      return "Pestañas de la derecha cerradas";
+      return "Tabs to the right closed";
 
     case "close-other-tabs":
       await closeOtherTabs();
-      return "Resto de pestañas cerradas";
+      return "Other tabs closed";
 
     case "toggle-pin-current-tab":
       await togglePinCurrentTab();
-      return "Estado de fijado cambiado";
+      return "Pin state changed";
   }
 }

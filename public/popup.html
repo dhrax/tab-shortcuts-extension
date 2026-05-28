@@ -59,7 +59,7 @@
       }
 
       .section-title {
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         color: #d1d5db;
         font-size: 11px;
         font-weight: 700;
@@ -130,63 +130,160 @@
         font-size: 9px;
       }
 
-      .action-group {
+      .tab-nav {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
         margin-bottom: 10px;
       }
 
-      .action-group:last-child {
-        margin-bottom: 0;
+      .tab-button {
+        padding: 8px 10px;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        background: #111827;
+        color: #d1d5db;
+        font-size: 11px;
+        text-align: center;
+        cursor: pointer;
       }
 
-      .action-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 7px;
+      .tab-button.active,
+      .tab-button:hover {
+        background: #1f2937;
       }
 
-      .action-button {
-        min-height: 54px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 6px;
-        padding: 9px;
+      .hidden {
+        display: none;
+      }
+
+      .small-button {
         border: 1px solid #374151;
         border-radius: 10px;
         background: #111827;
         color: #f9fafb;
+        padding: 8px 10px;
+        font-size: 11px;
         cursor: pointer;
-        text-align: left;
       }
 
-      .action-button:hover {
+      .small-button:hover {
         background: #1f2937;
       }
 
-      .action-button:disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
+      .small-button.danger {
+        border-color: #b91c1c;
+        color: #fecaca;
       }
 
-      .action-title {
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .form-row {
+        display: grid;
+        gap: 8px;
+      }
+
+      .form-row input,
+      .form-row textarea,
+      .form-row button,
+      .copy-grid {
+        width: 100%;
+      }
+
+      input,
+      textarea {
+        border: 1px solid #374151;
+        border-radius: 10px;
+        background: #111827;
+        color: #f9fafb;
+        padding: 10px;
         font-size: 12px;
-        font-weight: 700;
-        line-height: 1.15;
       }
 
-      .shortcut {
-        width: fit-content;
-        padding: 3px 5px;
-        border-radius: 6px;
-        background: #374151;
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .copy-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .search-results,
+      .sessions-list,
+      .snippets-list {
+        display: grid;
+        gap: 8px;
+        max-height: 260px;
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+
+      .search-item,
+      .session-item,
+      .snippet-item {
+        padding: 10px;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        background: #111827;
+      }
+
+      .search-item-info,
+      .session-item-header,
+      .snippet-item-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+
+      .search-item-title,
+      .session-item-title,
+      .snippet-item-title {
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .search-item-url,
+      .session-item-meta,
+      .snippet-item-meta {
+        color: #9ca3af;
+        font-size: 11px;
+        min-width: 0;
+      }
+
+      .search-item-actions,
+      .session-item-actions,
+      .snippet-item-actions {
+        display: grid;
+        gap: 6px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .snippet-item-content {
+        white-space: pre-wrap;
         color: #d1d5db;
-        font-size: 9px;
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+
+      .empty-message {
+        color: #9ca3af;
+        font-size: 12px;
       }
 
       .status {
-        min-height: 16px;
+        min-height: 18px;
         color: #9ca3af;
         font-size: 11px;
+        margin-top: 8px;
       }
 
       .status.success {
@@ -204,21 +301,21 @@
       <header class="header">
         <div>
           <h1 class="title">Tab Shortcuts</h1>
-          <div class="subtitle">Panel de control de pestañas</div>
+          <div class="subtitle">Productivity panel</div>
         </div>
 
-        <div class="open-shortcut">Alt Shift A</div>
+        <div class="open-shortcut">Alt + Shift + A</div>
       </header>
 
       <section class="card">
         <div class="top-row">
           <div>
-            <div class="section-title">Pestaña actual</div>
-            <div id="current-tab-title" class="tab-title">Cargando pestaña...</div>
+            <div class="section-title">Current tab</div>
+            <div id="current-tab-title" class="tab-title">Loading tab...</div>
             <div id="current-tab-url" class="tab-url"></div>
 
             <div class="badges">
-              <span id="current-tab-status" class="badge">Estado</span>
+              <span id="current-tab-status" class="badge">Status</span>
               <span id="current-tab-muted" class="badge">Audio</span>
             </div>
           </div>
@@ -228,12 +325,10 @@
               <div id="total-tabs" class="stat-value">0</div>
               <div class="stat-label">Tabs</div>
             </div>
-
             <div class="stat">
               <div id="muted-tabs" class="stat-value">0</div>
-              <div class="stat-label">Mute</div>
+              <div class="stat-label">Muted</div>
             </div>
-
             <div class="stat">
               <div id="audible-tabs" class="stat-value">0</div>
               <div class="stat-label">Audio</div>
@@ -242,61 +337,67 @@
         </div>
       </section>
 
-      <section class="card">
-        <div class="action-group">
-          <div class="section-title">Acciones rápidas</div>
+      <nav class="tab-nav">
+        <button type="button" class="tab-button active" data-section="actions-section">Actions</button>
+        <button type="button" class="tab-button" data-section="search-section">Search</button>
+        <button type="button" class="tab-button" data-section="sessions-section">Sessions</button>
+        <button type="button" class="tab-button" data-section="links-section">Links</button>
+        <button type="button" class="tab-button" data-section="snippets-section">Snippets</button>
+      </nav>
 
-          <div class="action-grid">
-            <button class="action-button" data-action="duplicate-current-tab">
-              <span class="action-title">Duplicar pestaña</span>
-              <span class="shortcut">Alt Shift D</span>
-            </button>
+      <section id="actions-section" class="card section-panel">
+        <div class="section-title">Quick actions</div>
 
-            <button class="action-button" data-action="toggle-mute-current-tab">
-              <span class="action-title">Mutear / desmutear</span>
-              <span class="shortcut">Alt Shift M</span>
-            </button>
-
-            <button class="action-button" data-action="toggle-pin-current-tab">
-              <span class="action-title">Fijar / desfijar</span>
-              <span class="shortcut">Configurable</span>
-            </button>
-
-            <button class="action-button" data-action="mute-other-tabs">
-              <span class="action-title">Mutear las demás</span>
-              <span class="shortcut">Configurable</span>
-            </button>
-          </div>
+        <div class="action-grid">
+          <button type="button" class="small-button" data-tab-action="duplicate-current-tab">Duplicate</button>
+          <button type="button" class="small-button" data-tab-action="toggle-mute-current-tab">Mute / Unmute</button>
+          <button type="button" class="small-button" data-tab-action="mute-other-tabs">Mute others</button>
+          <button type="button" class="small-button" data-tab-action="close-duplicate-tabs">Close duplicates</button>
+          <button type="button" class="small-button" data-tab-action="close-tabs-to-left">Close left</button>
+          <button type="button" class="small-button" data-tab-action="close-tabs-to-right">Close right</button>
+          <button type="button" class="small-button" data-tab-action="close-other-tabs">Close others</button>
+          <button type="button" class="small-button" data-tab-action="toggle-pin-current-tab">Pin / Unpin</button>
         </div>
 
-        <div class="action-group">
-          <div class="section-title">Cierre de pestañas</div>
+        <div id="status" class="status"></div>
+      </section>
 
-          <div class="action-grid">
-            <button class="action-button" data-action="close-other-tabs">
-              <span class="action-title">Cerrar las demás</span>
-              <span class="shortcut">Alt Shift X</span>
-            </button>
+      <section id="search-section" class="card section-panel hidden">
+        <div class="section-title">Search tabs</div>
+        <div class="form-row">
+          <input id="tab-search-input" type="search" placeholder="Search by title or URL" />
+        </div>
+        <div id="tab-search-results" class="search-results"></div>
+      </section>
 
-            <button class="action-button" data-action="close-duplicate-tabs">
-              <span class="action-title">Cerrar duplicadas</span>
-              <span class="shortcut">Configurable</span>
-            </button>
+      <section id="sessions-section" class="card section-panel hidden">
+        <div class="section-title">Saved sessions</div>
+        <div class="form-row">
+          <input id="session-name-input" type="text" placeholder="Session name" />
+          <button id="save-session-button" type="button" class="small-button">Save session</button>
+        </div>
+        <div id="sessions-list" class="sessions-list"></div>
+      </section>
 
-            <button class="action-button" data-action="close-tabs-to-left">
-              <span class="action-title">Cerrar izquierda</span>
-              <span class="shortcut">Configurable</span>
-            </button>
-
-            <button class="action-button" data-action="close-tabs-to-right">
-              <span class="action-title">Cerrar derecha</span>
-              <span class="shortcut">Configurable</span>
-            </button>
-          </div>
+      <section id="links-section" class="card section-panel hidden">
+        <div class="section-title">Copy links</div>
+        <div class="copy-grid">
+          <button type="button" class="small-button" data-copy-action="current-url-plain">Current URL</button>
+          <button type="button" class="small-button" data-copy-action="current-url-markdown">Current URL MD</button>
+          <button type="button" class="small-button" data-copy-action="window-urls-plain">All URLs</button>
+          <button type="button" class="small-button" data-copy-action="window-urls-markdown">All MD</button>
         </div>
       </section>
 
-      <div id="status" class="status"></div>
+      <section id="snippets-section" class="card section-panel hidden">
+        <div class="section-title">Personal snippets</div>
+        <div class="form-row">
+          <input id="snippet-title-input" type="text" placeholder="Snippet title" />
+          <textarea id="snippet-content-input" placeholder="Snippet content"></textarea>
+          <button id="add-snippet-button" type="button" class="small-button">Add snippet</button>
+        </div>
+        <div id="snippets-list" class="snippets-list"></div>
+      </section>
     </div>
 
     <script type="module" src="popup.js"></script>
